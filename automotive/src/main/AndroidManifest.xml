@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Read-only permissions only. CONTROL_CAR_* is not used. -->
+    <!-- Permissions confirmed from @RequiresCustomPermission values in the Vehicle SDK 2.3.2 AAR -->
+    <uses-permission android:name="pleos.car.permission.CAR_DRIVE" />    <!-- steering angle -->
+    <uses-permission android:name="pleos.car.permission.CAR_WINDOWS" />  <!-- wipers -->
+    <uses-permission android:name="pleos.car.permission.CAR_LIGHTS" />   <!-- low beam -->
+    <uses-permission android:name="pleos.car.permission.CAR_SEATS" />    <!-- seat occupancy -->
+    <uses-permission android:name="pleos.car.permission.CAR_CLIMATE" />  <!-- defroster -->
+    <uses-permission android:name="pleos.car.permission.NAVI_ROUTE" />   <!-- read navigation route guidance (idle screen) -->
+    <!-- CarPropertyManager GEAR_SELECTION -->
+    <uses-permission android:name="android.car.permission.CAR_POWERTRAIN" />
+
+    <!-- RecordingService (Foreground Service; Android 14 requires a type) -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <uses-feature
+        android:name="android.hardware.type.automotive"
+        android:required="true" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.PleosVillage">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:label="@string/title_activity_main"
+            android:theme="@style/Theme.PleosVillage">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <!-- Not blocked while driving. When driving restriction turns on, the app switches itself to the idle screen (village only, no interaction).
+                 (decided 2026-11-14: an animated idle screen while driving instead of "사용할 수 없습니다") -->
+            <meta-data android:name="distractionOptimized" android:value="true" />
+        </activity>
+
+        <service
+            android:name=".service.RecordingService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Records read-only vehicle signals (gear, wipers, lights, steering) during a trip to evaluate safe-driving conditions. The app shows no UI while driving." />
+        </service>
+    </application>
+
+</manifest>

@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<script>document.documentElement.dataset.theme=(new URLSearchParams(location.search).get('theme')==='night')?'night':'light';</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&display=swap">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#222;font-family:'Pretendard Variable','Pretendard',sans-serif;letter-spacing:-0.2px}
+
+/* ---------- UI 토큰: 배치와 글자에 쓰는 색 ---------- */
+/* ink/ink2 = 밝은 카드 위 글자 (두 테마 같음). fg/fg2 = 바탕 위 글자 */
+:root{--ol:#3D3B52;--ink:#2E2C42;--ink2:#5B5873;--cline:#E2E1F3;--sel:#C9CCF5;--cok:#2F7A5E;--cwarn:#B5533C}
+:root[data-theme="light"]{
+ --bg:#F6F6FE;--surface2:#ECEDFB;--card:#FFFFFF;--panel:#E3F2FC;
+ --fg:#2E2C42;--fg2:#5B5873;--line:#DCDBF0;
+ --btn:#B9C3F7;--btn-fg:#2E2C42;--ok:#2F7A5E;--warn:#B5533C;
+}
+:root[data-theme="night"]{
+ --bg:#2E3157;--surface2:#383C68;--card:#F7F6FE;--panel:#E3F2FC;
+ --fg:#F2F1FF;--fg2:#C9C8EA;--line:#4D5288;
+ --btn:#B9C3F7;--btn-fg:#2E2C42;--ok:#9FE0C3;--warn:#FFB7A3;
+}
+
+/* ---------- Pleos 시스템 틀 (바꾸지 않음) ---------- */
+.screen{width:1600px;height:900px;background:#06090f;position:relative;overflow:hidden;color:#e8edf5;margin-bottom:20px}
+.status{position:absolute;top:0;left:0;right:0;height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 28px}
+.cap{background:#ffd34d;color:#1a1400;font-weight:800;font-size:19px;padding:5px 14px;border-radius:8px}
+.capsub{color:#9aa4b5;font-size:16px;margin-left:12px;font-weight:500}
+.clock{color:#c9d1de;font-size:17px}
+.drive{position:absolute;left:16px;top:56px;width:400px;bottom:96px;background:#111722;border-radius:20px;padding:26px 30px}
+.gear{font-size:22px;color:#8f9ab0}.gear b{color:#fff;font-size:26px;margin-right:6px}
+.speed{font-size:104px;font-weight:300;line-height:1;margin-top:18px}.unit{font-size:20px;color:#8f9ab0}
+.car{position:absolute;left:44px;right:44px;top:320px;height:150px}
+.range{position:absolute;left:30px;bottom:26px;color:#8f9ab0;font-size:18px}
+.dock{position:absolute;left:16px;right:16px;bottom:12px;height:72px;background:#111722;border-radius:18px;display:flex;align-items:center;justify-content:space-between;padding:0 30px}
+.dock .icons{display:flex;gap:18px}.dock .ic{width:40px;height:40px;border-radius:11px;background:#232c3c}
+.dock .ic.a{background:#3b6cff}.dock .ic.b{background:#2fbf71}.dock .ic.c{background:#8b5cf6}.dock .ic.d{background:#f59e0b}
+.temp{font-size:22px;color:#d6dde9}
+
+/* ---------- 앱 영역 ---------- */
+.app{position:absolute;left:432px;right:16px;top:56px;bottom:96px;border-radius:20px;overflow:hidden;background:var(--bg);color:var(--fg)}
+.disp{font-family:'Jua',sans-serif;font-weight:400;letter-spacing:-0.3px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:58px;padding:0 26px;border-radius:16px;font-size:19px;font-weight:700;letter-spacing:-0.1px;border:2px solid var(--ol)}
+.btn.p{background:var(--btn);color:var(--btn-fg)}
+.btn.s{background:#FFFFFF;color:var(--ink)}
+.card{background:var(--card);border:2px solid var(--ol);border-radius:16px;color:var(--ink)}
+.hair{height:2px;background:var(--line);border-radius:1px}
+.lab{font-size:14px;font-weight:500;color:var(--fg2)}
+.val{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--fg)}
+.card .lab{color:var(--ink2)}.card .val{color:var(--ink)}
+.nav{position:absolute;left:28px;display:flex;flex-direction:column;gap:10px;z-index:5}
+.nav .it{display:flex;align-items:center;gap:9px;font-size:17px;font-weight:500;color:var(--fg2);padding:7px 15px 7px 10px;border:2px solid transparent;border-radius:14px}
+.nav .it.on{background:var(--sel);border-color:var(--ol);color:var(--ink);font-weight:700}
+.tab{font-size:16px;font-weight:600;color:var(--fg2);padding:5px 14px;border:2px solid transparent;border-radius:999px}
+.tab.on{background:var(--sel);border-color:var(--ol);color:var(--ink);font-weight:700}
+.ibtn{width:44px;height:44px;border:2px solid var(--ol);border-radius:50%;background:#FFFFFF;display:flex;align-items:center;justify-content:center}
+/* 그림: 모든 선을 화면 기준 같은 굵기로 (크기를 바꿔도 2px) */
+svg.art *{vector-effect:non-scaling-stroke}
+</style></head><body>
+
+<template id="park">
+  <div class="drive"><div class="gear"><b>P</b> 정차</div><div class="speed">0 <span class="unit">km/h</span></div>
+  <svg class="car" viewBox="0 0 320 150"><path d="M30 105 Q32 70 80 62 L120 34 Q140 24 180 24 L225 26 Q250 30 268 62 Q300 70 298 105 Z" fill="#2a3446"/><circle cx="90" cy="108" r="22" fill="#151b26" stroke="#3a465c" stroke-width="6"/><circle cx="240" cy="108" r="22" fill="#151b26" stroke="#3a465c" stroke-width="6"/></svg>
+  <div class="range">주행 가능 320 km</div></div>
+</template>
+<template id="dock"><div class="dock"><div class="temp">23.5°</div><div class="icons"><div class="ic a"></div><div class="ic b"></div><div class="ic"></div><div class="ic c"></div><div class="ic d"></div><div class="ic"></div><div class="ic"></div></div><div class="temp">23.5°</div></div></template>
+
+<div class="screen" id="c1"><div class="status"><div><span class="cap">화면 1 · 도착 요약</span><span class="capsub">가로형 · 정차하면 표시</span></div><div class="clock">01:58 PM</div></div><div class="app" id="c1app"></div></div>
+<div class="screen" id="c2"><div class="status"><div><span class="cap">화면 2 · 마을</span><span class="capsub">가로형 · 정차 중에만 열림</span></div><div class="clock">02:03 PM</div></div><div class="app" id="c2app"></div></div>
+<div class="screen" id="c3"><div class="status"><div><span class="cap">화면 3 · 주민 도감</span><span class="capsub">가로형 · 확률과 천장을 모두 공개</span></div><div class="clock">02:05 PM</div></div><div class="app" id="c3app"></div></div>
+<div class="screen" id="c4"><div class="status"><div><span class="cap">화면 4 · 세로형</span><span class="capsub">앱 창 1개 · 다른 앱과 나란히 · 가로형과 같은 기능</span></div><div class="clock">02:07 PM</div></div><div class="app" id="c4app" style="background:#06090f"></div></div>
+<div class="screen" id="c5"><div class="status"><div><span class="cap">화면 5 · 주간 이웃 교류</span><span class="capsub">가로형 · 확대 계획 · 두 마을이 모두 주간 목표를 채우면 새 주민</span></div><div class="clock">02:10 PM</div></div><div class="app" id="c5app"></div></div>
+<div class="screen" id="c6"><div class="status"><div><span class="cap">화면 6 · 꾸미기</span><span class="capsub">가로형 · 포인트로 아이템을 얻어 놓기</span></div><div class="clock">02:12 PM</div></div><div class="app" id="c6app"></div></div>
+<div id="thumbV" style="width:520px;height:330px;position:relative;overflow:hidden;border-radius:18px;background:var(--bg)"></div>
+<div id="thumbR" style="width:480px;height:250px;position:relative;display:flex;gap:40px;align-items:flex-end;justify-content:center"></div>
+
+<script>
+/* ---------------- UI 토큰 ---------------- */
+const CSSV=getComputedStyle(document.documentElement),tk=n=>CSSV.getPropertyValue('--'+n).trim();
+const NIGHT=document.documentElement.dataset.theme==='night';
+const BG=tk('bg'),FG=tk('fg'),FG2=tk('fg2'),INK=tk('ink'),INK2=tk('ink2'),OK=tk('ok'),WARN=tk('warn'),COK=tk('cok'),BTNFG=tk('btn-fg');
+
+/* ---------------- 그림 토큰 (두 테마에서 같음, 밤에는 하늘만 바뀜) ---------------- */
+const ART={
+ ol:'#3D3B52',white:'#FFFFFF',cream:'#FFF6E6',stone:'#F4F2FB',pebble:'#FFF3E6',
+ peri:'#C9CCF5',lav:'#B9B3EE',baby:'#BFE3F7',mint:'#C8EBD7',mint2:'#A8DCC0',sage:'#D6F0C9',sage2:'#BFE3B4',
+ pink:'#F9C9DC',butter:'#FBEAA0',peach:'#FAD3B8',rose:'#F5A6C2',blush:'#F6A5C0',trunk:'#EECBA8',
+ earth:'#F6DEC9',earthD:'#ECCBB0',
+ okFill:'rgba(168,220,192,.80)',okLine:'#2F7A5E',noFill:'rgba(249,188,176,.75)',noLine:'#B5533C',
+ sil:'#E4E2FA',
+ tint:{rain:'#DDF0FB',night:'#E6E3FA',family:'#FCE3EC',winter:'#E6F0FA',long:'#DFF3E7',charge:'#FCF2CC',mix:'#E7E8FB',locked:'#EEEDFA'}
+};
+const OL=ART.ol;
+let LWc=2;
+const O=w=>`stroke="${OL}" stroke-width="${w??LWc}" stroke-linejoin="round" stroke-linecap="round"`;
+const f2=n=>+(+n).toFixed(2);
+
+document.querySelectorAll('.screen').forEach(s=>s.insertAdjacentHTML('beforeend',document.getElementById('park').innerHTML+document.getElementById('dock').innerHTML));
+
+const ENV={
+ rain:{c:ART.tint.rain,name:'비 주민',env:'와이퍼가 동작한 운행',p:'40%',ce:'3번째',no:'01'},
+ night:{c:ART.tint.night,name:'밤 주민',env:'하향등을 켜고 달린 운행',p:'30%',ce:'4번째',no:'02'},
+ family:{c:ART.tint.family,name:'가족 주민',env:'뒷좌석에 사람이 탄 운행',p:'50%',ce:'2번째',no:'03'},
+ winter:{c:ART.tint.winter,name:'겨울 주민',env:'성에 제거를 쓴 운행',p:'30%',ce:'4번째',no:'04'},
+ long:{c:ART.tint.long,name:'장거리 주민',env:'2시간 넘는 운행에서 쉰 운행',p:'50%',ce:'2번째',no:'05'},
+ charge:{c:ART.tint.charge,name:'충전 주민',env:'충전한 날 (전기차)',p:'30%',ce:'4번째',no:'06'},
+ sea:{c:ART.tint.locked,name:'바다 주민',env:'바닷가 도로를 달린 운행',no:'07'},
+ mountain:{c:ART.tint.locked,name:'산 주민',env:'산길을 달린 운행',no:'08'},
+};
+
+/* ---------------- 작은 그림 조각 ---------------- */
+function star5(x,y,R,fill=ART.butter){let d='';for(let q=0;q<10;q++){const a=-Math.PI/2+q*Math.PI/5,r=q%2?R*.5:R;d+=(q?'L':'M')+f2(x+r*Math.cos(a))+' '+f2(y+r*Math.sin(a));}return `<path d="${d}Z" fill="${fill}" ${O()}/>`;}
+function sparkle(x,y,R,fill=ART.white){const c=R*.16;return `<path d="M${f2(x)} ${f2(y-R)} Q${f2(x+c)} ${f2(y-c)} ${f2(x+R)} ${f2(y)} Q${f2(x+c)} ${f2(y+c)} ${f2(x)} ${f2(y+R)} Q${f2(x-c)} ${f2(y+c)} ${f2(x-R)} ${f2(y)} Q${f2(x-c)} ${f2(y-c)} ${f2(x)} ${f2(y-R)}Z" fill="${fill}" ${O()}/>`;}
+function bub(x,y,r){return `<circle cx="${f2(x)}" cy="${f2(y)}" r="${f2(r)}" fill="#FFFFFF" ${O()}/>`;}
+function cloud(x,y,k){return `<path transform="translate(${x} ${y}) scale(${k})" d="M6 0 A8 8 0 0 1 8 -14 A11 11 0 0 1 26 -24 A13 13 0 0 1 50 -26 A11 11 0 0 1 68 -16 A10.5 10.5 0 0 1 80 0 Z" fill="#FFFFFF" ${O()}/>`;}
+const moonD=(cx,cy,r)=>`M${f2(cx-r)} ${f2(cy)} A${f2(r)} ${f2(r)} 0 1 0 ${f2(cx)} ${f2(cy+r)} A${f2(r*.8)} ${f2(r*.8)} 0 1 1 ${f2(cx-r)} ${f2(cy)}Z`;
+function flower(x,y,R,fill=ART.white,ctr=ART.lav){const r0=R*.5,pts=[];for(let q=0;q<5;q++){const a=-Math.PI/2+Math.PI/5+q*2*Math.PI/5;pts.push([x+r0*Math.cos(a),y+r0*Math.sin(a)]);}
+  const ch=2*r0*Math.sin(Math.PI/5),rl=f2(ch*.62);let d=`M${f2(pts[0][0])} ${f2(pts[0][1])}`;for(let q=1;q<=5;q++){const p=pts[q%5];d+=` A${rl} ${rl} 0 1 1 ${f2(p[0])} ${f2(p[1])}`;}
+  return `<path d="${d}Z" fill="${fill}" ${O()}/><circle cx="${f2(x)}" cy="${f2(y)}" r="${f2(R*.3)}" fill="${ctr}" ${O()}/>`;}
+function leaf(x,y,len,ang,fill=ART.mint2){return `<path transform="translate(${f2(x)} ${f2(y)}) rotate(${ang})" d="M0 0 Q${f2(len*.5)} ${f2(-len*.36)} ${f2(len)} 0 Q${f2(len*.5)} ${f2(len*.36)} 0 0Z" fill="${fill}" ${O()}/>`;}
+function drop(x,y,r,fill=ART.baby){return `<path d="M${f2(x)} ${f2(y-r*1.9)} C${f2(x+r*.5)} ${f2(y-r*1.1)} ${f2(x+r)} ${f2(y-r*.5)} ${f2(x+r)} ${f2(y)} A${f2(r)} ${f2(r)} 0 0 1 ${f2(x-r)} ${f2(y)} C${f2(x-r)} ${f2(y-r*.5)} ${f2(x-r*.5)} ${f2(y-r*1.1)} ${f2(x)} ${f2(y-r*1.9)}Z" fill="${fill}" ${O()}/>`;}
+function heart(x,y,s,fill=ART.rose){return `<path d="M${f2(x)} ${f2(y+5*s)} C${f2(x-7*s)} ${f2(y)} ${f2(x-7*s)} ${f2(y-6*s)} ${f2(x-3*s)} ${f2(y-7*s)} C${f2(x-1*s)} ${f2(y-7.5*s)} ${f2(x)} ${f2(y-6*s)} ${f2(x)} ${f2(y-4.5*s)} C${f2(x)} ${f2(y-6*s)} ${f2(x+1*s)} ${f2(y-7.5*s)} ${f2(x+3*s)} ${f2(y-7*s)} C${f2(x+7*s)} ${f2(y-6*s)} ${f2(x+7*s)} ${f2(y)} ${f2(x)} ${f2(y+5*s)}Z" fill="${fill}" ${O()}/>`;}
+const hl=(cx,cy,rx,ry,rot,op=.8)=>`<ellipse cx="${f2(cx)}" cy="${f2(cy)}" rx="${f2(rx)}" ry="${f2(ry)}" transform="rotate(${rot} ${f2(cx)} ${f2(cy)})" fill="#FFFFFF" opacity="${op}"/>`;
+/* 우산 덮개: 꼭대기 (ax,ay), 폭 w, 칸마다 다른 파스텔 */
+function umbrella(ax,ay,w,cols){const by=ay+w*.48,x0=ax-w/2,step=w/4,rr=f2(step*.6);let s='';
+  for(let q=0;q<4;q++){const l=f2(x0+q*step),r=f2(x0+(q+1)*step);let d;
+    if(q===0) d=`M${f2(ax)} ${f2(ay)} Q${f2(x0+step*.12)} ${f2(ay+w*.03)} ${l} ${f2(by)} A${rr} ${rr} 0 0 1 ${r} ${f2(by)} Z`;
+    else if(q===3) d=`M${f2(ax)} ${f2(ay)} L${l} ${f2(by)} A${rr} ${rr} 0 0 1 ${r} ${f2(by)} Q${f2(x0+w-step*.12)} ${f2(ay+w*.03)} ${f2(ax)} ${f2(ay)}Z`;
+    else d=`M${f2(ax)} ${f2(ay)} L${l} ${f2(by)} A${rr} ${rr} 0 0 1 ${r} ${f2(by)} Z`;
+    s+=`<path d="${d}" fill="${cols[q]}" ${O()}/>`;}
+  return s;}
+
+/* ---------------- 주민: 종류마다 다른 몸 (viewBox 100) ---------------- */
+function face(x,y,s=1){return `<ellipse cx="${f2(x-7*s)}" cy="${y}" rx="${f2(2.6*s)}" ry="${f2(3.2*s)}" fill="${OL}"/><ellipse cx="${f2(x+7*s)}" cy="${y}" rx="${f2(2.6*s)}" ry="${f2(3.2*s)}" fill="${OL}"/>
+  <path d="M${f2(x-3*s)} ${f2(y+6*s)} Q${x} ${f2(y+9*s)} ${f2(x+3*s)} ${f2(y+6*s)}" fill="none" ${O()}/>
+  <ellipse cx="${f2(x-12.5*s)}" cy="${f2(y+5*s)}" rx="${f2(4.4*s)}" ry="${f2(2.7*s)}" fill="${ART.blush}"/><ellipse cx="${f2(x+12.5*s)}" cy="${f2(y+5*s)}" rx="${f2(4.4*s)}" ry="${f2(2.7*s)}" fill="${ART.blush}"/>`;}
+const DROP='M50 14 C58 30 78 44 78 64 C78 80 66 90 50 90 C34 90 22 80 22 64 C22 44 42 30 50 14Z';
+const ROUND='M22 62 C22 42 35 30 50 30 C65 30 78 42 78 62 C78 79 66 90 50 90 C34 90 22 79 22 62Z';
+function body(kind){
+  if(kind==='rain') return `<path d="M82 33 V52 Q82 58 73 57" fill="none" ${O()}/><path d="M82 17 V11.5" fill="none" ${O()}/>
+    <path d="${DROP}" fill="${ART.baby}" ${O()}/>${hl(36,55,3.6,7,28)}
+    ${umbrella(82,17,32,[ART.pink,ART.butter,ART.mint2,ART.peri])}${face(50,65)}`;
+  if(kind==='night') return `${star5(87,21,4.6)}<path d="${ROUND}" fill="${ART.lav}" ${O()}/>${hl(35,46,5,3,-35,.7)}
+    <path d="${moonD(67,25,11)}" fill="${ART.butter}" ${O()}/>${face(50,63)}`;
+  if(kind==='family') return `<path d="M12 64 C12 46 24 36 39 36 C54 36 65 46 65 64 C65 80 54 89 39 89 C24 89 12 80 12 64Z" fill="${ART.pink}" ${O()}/>${hl(25,51,4.5,2.8,-35)}${face(38,62,.9)}
+    <path d="M57 73 C57 62 64 56 73 56 C82 56 89 62 89 73 C89 83 82 89 73 89 C64 89 57 83 57 73Z" fill="${ART.peach}" ${O()}/>${face(73,73,.62)}
+    ${heart(65,40,.95)}`;
+  if(kind==='winter') return `${sparkle(18,34,5.5,ART.baby)}${bub(84,40,2.8)}<circle cx="50" cy="60" r="28" fill="#FFFFFF" ${O()}/>
+    <path d="M23.5 64 Q50 75 76.5 64 L76 72.5 Q50 83 24 72.5Z" fill="${ART.mint2}" ${O()}/><path d="M61 75 L67 91 L57.5 90 L54.5 77Z" fill="${ART.mint2}" ${O()}/>${face(50,54)}`;
+  if(kind==='long') return `<rect x="21" y="47" width="17" height="28" rx="6" fill="${ART.peri}" ${O()}/><path d="M21 57 H37" fill="none" ${O()}/>
+    <path d="M36 32 C36 17 64 17 64 32 L66 77 C66 89 34 89 34 77Z" fill="${ART.mint}" ${O()}/>${hl(43,28,3.4,2.2,-30)}
+    <path d="M36.5 40 Q42 50 37 66" fill="none" ${O()}/>${face(52,48,.85)}`;
+  if(kind==='charge') return `<path d="M54 6 L44 25 L51 25 L46 39 L61 19 L53.5 19 L58 6Z" fill="${ART.peach}" ${O()}/>
+    <path d="M22 63 C22 45 35 35 50 35 C65 35 78 45 78 63 C78 79 66 90 50 90 C34 90 22 79 22 63Z" fill="${ART.butter}" ${O()}/>${hl(35,49,5,3,-35)}${face(50,64)}`;
+  if(kind==='rain_moon') return `<path d="${DROP}" fill="${ART.baby}" ${O()}/>${hl(36,55,3.6,7,28)}<path d="${moonD(79,24,11)}" fill="${ART.butter}" ${O()}/>${star5(91,45,4)}${face(50,65)}`;
+  return '';
+}
+function sil(){return `<path d="${ROUND}" fill="${ART.sil}" stroke="${OL}" stroke-width="${LWc}" stroke-dasharray="5 5" stroke-linecap="round"/><text x="50" y="71" text-anchor="middle" font-family="Jua" font-size="26" fill="${INK2}">?</text>`;}
+function blob(size,kind,isSil=false,o={}){const p=LWc;LWc=o.lw||2;const g=isSil?sil():body(kind);LWc=p;
+  return `<svg class="art" width="${f2(size)}" height="${f2(size)}" viewBox="0 0 100 100" style="overflow:visible;display:block">${g}</svg>`;}
+
+/* ---------------- 선 아이콘 ---------------- */
+const LI=(d,s=24,c=FG2,w=2)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+const IC={
+ home:(s,c)=>LI('<path d="M3.5 11 12 4.5l8.5 6.5"/><path d="M5.5 10v9.5h13V10"/>',s,c),
+ book:(s,c)=>LI('<path d="M4 5.5C6.5 4 9.5 4 12 6c2.5-2 5.5-2 8-.5V19c-2.5-1.5-5.5-1.5-8 .5-2.5-2-5.5-2-8-.5Z"/><path d="M12 6v13.5"/>',s,c),
+ chart:(s,c)=>LI('<path d="M5 20V12"/><path d="M12 20V5"/><path d="M19 20v-9"/>',s,c),
+ gear:(s,c)=>LI('<circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/>',s,c),
+ brush:(s,c)=>LI('<path d="m14.5 4.5 5 5L11 18l-5-5Z"/><path d="M6 13c-2 0-3 1.5-3 3.5V20h3.5c2 0 3.5-1 3.5-3"/>',s,c),
+ undo:(s,c)=>LI('<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>',s,c),
+ redo:(s,c)=>LI('<path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/>',s,c),
+ lock:(s,c)=>LI('<rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',s,c),
+ arrow:(s,c)=>LI('<path d="M5 12h14M13 6l6 6-6 6"/>',s,c),
+};
+function logo(sz=22){return `<svg class="art" width="${sz}" height="${sz}" viewBox="0 0 24 24" style="overflow:visible;display:block"><path d="M3.5 11.5 12 4.5l8.5 7V19a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 19Z" fill="${ART.peri}" ${O()}/><path d="M9.5 20.5v-4a2.5 2.5 0 0 1 5 0v4" fill="${ART.butter}" ${O()}/></svg>`;}
+
+/* ---------------- 마을 소품 (밑바닥 가운데가 기준점) ---------------- */
+function door(x,y,w,h,fill){return `<path d="M${f2(x-w/2)} ${f2(y)} V${f2(y-h+w/2)} A${f2(w/2)} ${f2(w/2)} 0 0 1 ${f2(x+w/2)} ${f2(y-h+w/2)} V${f2(y)} Z" fill="${fill}" ${O()}/>`;}
+function rwin(x,y,r,fill=ART.butter){return `<circle cx="${f2(x)}" cy="${f2(y)}" r="${f2(r)}" fill="${fill}" ${O()}/><path d="M${f2(x-r)} ${f2(y)} H${f2(x+r)} M${f2(x)} ${f2(y-r)} V${f2(y+r)}" fill="none" ${O()}/>`;}
+/* 주민마다 다른 집 */
+function house(kind,cx,cy,k){const X=v=>f2(cx+v*k),Y=v=>f2(cy+v*k);let g='';
+  if(kind==='rain'){
+    g+=`<rect x="${X(-24)}" y="${Y(-34)}" width="${f2(48*k)}" height="${f2(36*k)}" rx="${f2(6*k)}" fill="#FFFFFF" ${O()}/>`;
+    g+=door(cx-9*k,cy+2*k,14*k,24*k,ART.peach)+rwin(cx+11*k,cy-16*k,7*k,ART.baby);
+    g+=`<path d="M${X(0)} ${Y(-66)} V${Y(-72)}" fill="none" ${O()}/><circle cx="${X(0)}" cy="${Y(-74.5)}" r="${f2(2.8*k)}" fill="${ART.butter}" ${O()}/>`;
+    g+=umbrella(cx,cy-66*k,74*k,[ART.pink,ART.butter,ART.mint2,ART.peri]);
+  } else if(kind==='night'){
+    g+=`<path d="M${X(0)} ${Y(-52)} V${Y(-58)}" fill="none" ${O()}/><path d="${moonD(cx+3*k,cy-67*k,9*k)}" fill="${ART.butter}" ${O()}/>${star5(cx+20*k,cy-58*k,4.5*k)}`;
+    g+=`<path d="M${X(-22)} ${Y(2)} V${Y(-30)} A${f2(22*k)} ${f2(22*k)} 0 0 1 ${X(22)} ${Y(-30)} V${Y(2)} Z" fill="${ART.lav}" ${O()}/>`;
+    g+=rwin(cx,cy-34*k,7.5*k,ART.butter)+door(cx,cy+2*k,14*k,20*k,ART.peri);
+  } else if(kind==='family'){
+    g+=`<rect x="${X(-30)}" y="${Y(-28)}" width="${f2(62*k)}" height="${f2(30*k)}" rx="${f2(5*k)}" fill="#FFFFFF" ${O()}/>`;
+    g+=`<path d="M${X(2)} ${Y(-25)} L${X(19)} ${Y(-47)} L${X(36)} ${Y(-25)} Z" fill="${ART.peach}" ${O()}/>`;
+    g+=`<path d="M${X(-37)} ${Y(-26)} L${X(-12)} ${Y(-58)} L${X(13)} ${Y(-26)} Z" fill="${ART.pink}" ${O()}/>`;
+    g+=heart(cx-12*k,cy-37*k,1.05*k)+rwin(cx-13*k,cy-12*k,6.5*k,ART.butter)+door(cx+17*k,cy+2*k,13*k,20*k,ART.peach);
+  } else if(kind==='winter'){
+    g+=`<path d="M${X(0)} ${Y(-31)} V${Y(-47)}" fill="none" ${O()}/><path d="M${X(0)} ${Y(-47)} L${X(12)} ${Y(-43)} L${X(0)} ${Y(-39)} Z" fill="${ART.mint2}" ${O()}/>`;
+    g+=`<path d="M${X(-32)} ${Y(2)} C${X(-32)} ${Y(-44)} ${X(32)} ${Y(-44)} ${X(32)} ${Y(2)} Z" fill="#FFFFFF" ${O()}/>`;
+    g+=`<path d="M${X(-27)} ${Y(-14)} Q${X(0)} ${Y(-20)} ${X(27)} ${Y(-14)} M${X(-10)} ${Y(-17)} V${Y(-28)} M${X(13)} ${Y(-17)} V${Y(-27)}" fill="none" ${O()}/>`;
+    g+=door(cx+8*k,cy+2*k,18*k,18*k,ART.baby)+sparkle(cx-27*k,cy-36*k,5*k,ART.baby);
+  }
+  return g;}
+function tree(cx,cy,k,alt=0){const X=v=>f2(cx+v*k),Y=v=>f2(cy+v*k),small=k<.8;
+  let g=`<rect x="${X(-4)}" y="${Y(-20)}" width="${f2(8*k)}" height="${f2(22*k)}" rx="${f2(3*k)}" fill="${ART.trunk}" ${O()}/>
+  <circle cx="${X(0)}" cy="${Y(-36)}" r="${f2(19*k)}" fill="${alt?ART.sage2:ART.mint2}" ${O()}/>${hl(cx-7*k,cy-45*k,5*k,3.2*k,-35,.6)}`;
+  const fr=small?[[7,-34,4.2,ART.pink],[-6,-26,4.2,ART.peach]]:[[7,-38,3.4,ART.pink],[-5,-28,3.4,ART.peach],[10,-25,3.1,ART.pink]];
+  fr.forEach(([dx,dy,r,c])=>{g+=`<circle cx="${X(dx)}" cy="${Y(dy)}" r="${f2(r*k)}" fill="${c}" ${O()}/>`;});
+  return g;}
+function flowerPatch(cx,cy,k){const X=v=>cx+v*k,Y=v=>cy+v*k;
+  if(k<.8) return leaf(X(-14),Y(2),14*k,-155)+leaf(X(12),Y(3),13*k,-25)+flower(X(-6),Y(-5),9*k)+flower(X(9),Y(-4),8*k,ART.pink,ART.butter);
+  return leaf(X(-17),Y(3),13*k,-155)+leaf(X(15),Y(4),12*k,-25)+leaf(X(0),Y(6),10*k,-95)+
+    flower(X(-10),Y(-6),7*k)+flower(X(7),Y(-8),7*k,ART.pink,ART.butter)+flower(X(-1),Y(2),6.5*k)+flower(X(16),Y(-1),5.5*k);}
+function fountain(cx,cy,k){const X=v=>f2(cx+v*k),Y=v=>f2(cy+v*k);
+  return `<ellipse cx="${X(0)}" cy="${Y(0)}" rx="${f2(30*k)}" ry="${f2(13*k)}" fill="${ART.stone}" ${O()}/>
+  <ellipse cx="${X(0)}" cy="${Y(-2)}" rx="${f2(23*k)}" ry="${f2(8.5*k)}" fill="${ART.baby}" ${O()}/>
+  <rect x="${X(-4)}" y="${Y(-24)}" width="${f2(8*k)}" height="${f2(22*k)}" rx="${f2(2*k)}" fill="${ART.stone}" ${O()}/>
+  <ellipse cx="${X(0)}" cy="${Y(-24)}" rx="${f2(11*k)}" ry="${f2(4.5*k)}" fill="${ART.stone}" ${O()}/>
+  ${drop(cx,cy-33*k,3.8*k)}${drop(cx-14*k,cy-23*k,3.2*k)}${drop(cx+14*k,cy-23*k,3.2*k)}`;}
+function lamp(cx,cy,k){const X=v=>f2(cx+v*k),Y=v=>f2(cy+v*k);
+  return `<rect x="${X(-2.5)}" y="${Y(-46)}" width="${f2(5*k)}" height="${f2(44*k)}" rx="${f2(2*k)}" fill="${ART.peri}" ${O()}/>
+  <rect x="${X(-6.5)}" y="${Y(-5)}" width="${f2(13*k)}" height="${f2(6*k)}" rx="${f2(2.5*k)}" fill="${ART.peri}" ${O()}/>
+  <circle cx="${X(0)}" cy="${Y(-53)}" r="${f2(8*k)}" fill="${ART.butter}" ${O()}/>
+  <path d="M${X(-7.5)} ${Y(-58)} Q${X(0)} ${Y(-68)} ${X(7.5)} ${Y(-58)} Z" fill="${ART.peri}" ${O()}/>`;}
+function bench(cx,cy,k){const X=v=>f2(cx+v*k),Y=v=>f2(cy+v*k);
+  return `<rect x="${X(-15)}" y="${Y(-24)}" width="${f2(4.5*k)}" height="${f2(25*k)}" rx="${f2(1.5*k)}" fill="#FFFFFF" ${O()}/><rect x="${X(10.5)}" y="${Y(-24)}" width="${f2(4.5*k)}" height="${f2(25*k)}" rx="${f2(1.5*k)}" fill="#FFFFFF" ${O()}/>
+  <rect x="${X(-20)}" y="${Y(-27)}" width="${f2(40*k)}" height="${f2(8*k)}" rx="${f2(3*k)}" fill="${ART.peach}" ${O()}/>
+  <rect x="${X(-22)}" y="${Y(-12)}" width="${f2(44*k)}" height="${f2(6*k)}" rx="${f2(3*k)}" fill="${ART.peach}" ${O()}/>`;}
+function fence(p0,p1,k){let s='';const n=Math.max(2,Math.round(Math.hypot(p1[0]-p0[0],p1[1]-p0[1])/(19*k)));
+  [-6,-12].forEach(h=>{const d=`M${f2(p0[0])} ${f2(p0[1]+h*k)} L${f2(p1[0])} ${f2(p1[1]+h*k)}`;
+    s+=`<path d="${d}" fill="none" stroke="${OL}" stroke-width="${f2(4*k+2*LWc)}" stroke-linecap="round"/><path d="${d}" fill="none" stroke="#FFFFFF" stroke-width="${f2(4*k)}" stroke-linecap="round"/>`;});
+  for(let q=0;q<=n;q++){const x=p0[0]+(p1[0]-p0[0])*q/n,y=p0[1]+(p1[1]-p0[1])*q/n;
+    s+=`<path d="M${f2(x-3*k)} ${f2(y+1*k)} V${f2(y-15*k)} L${f2(x)} ${f2(y-19*k)} L${f2(x+3*k)} ${f2(y-15*k)} V${f2(y+1*k)} Z" fill="#FFFFFF" ${O()}/>`;}
+  return s;}
+function pond(x,y,k){const X=v=>f2(x+v*k),Y=v=>f2(y+v*k);
+  return `<path d="M${X(-42)} ${Y(0)} C${X(-44)} ${Y(-16)} ${X(-12)} ${Y(-22)} ${X(8)} ${Y(-19)} C${X(34)} ${Y(-16)} ${X(46)} ${Y(-6)} ${X(40)} ${Y(8)} C${X(34)} ${Y(20)} ${X(-6)} ${Y(22)} ${X(-26)} ${Y(15)} C${X(-38)} ${Y(11)} ${X(-41)} ${Y(6)} ${X(-42)} ${Y(0)}Z" fill="${ART.baby}" ${O()}/>
+  ${hl(x-24*k,y-9*k,7*k,2.2*k,-12,.85)}
+  <path d="M${X(-30)} ${Y(5)} L${X(-24)} ${Y(1.5)} A${f2(7*k)} ${f2(4.5*k)} 0 1 1 ${X(-24)} ${Y(7)} Z" fill="${ART.mint2}" ${O()}/>
+  <path d="M${X(2)} ${Y(-2)} V${Y(-20)}" fill="none" ${O()}/>
+  <path d="M${X(3.5)} ${Y(-19)} L${X(3.5)} ${Y(-5)} L${X(15)} ${Y(-5)} Z" fill="#FFFFFF" ${O()}/>
+  <path d="M${X(-11)} ${Y(-2)} L${X(17)} ${Y(-2)} Q${X(14)} ${Y(7)} ${X(3)} ${Y(7)} Q${X(-8)} ${Y(7)} ${X(-11)} ${Y(-2)} Z" fill="${ART.peach}" ${O()}/>`;}
+function stone(x,y,k){return `<ellipse cx="${f2(x)}" cy="${f2(y)}" rx="${f2(6.5*k)}" ry="${f2(3.6*k)}" fill="${ART.pebble}" ${O()}/>`;}
+function deco(x,y,k,t){const s=Math.max(k,.75);
+  if(t===0) return leaf(x-1,y,8*s,-125,ART.sage2)+leaf(x+1,y,8*s,-55,ART.sage2);
+  if(t===1) return leaf(x,y,8*s,-150,ART.mint2)+flower(x+3*s,y-6*s,5*s);
+  return leaf(x,y,8*s,-30,ART.mint2)+flower(x-3*s,y-6*s,5*s,ART.pink,ART.butter);}
+
+/* 하늘: 구름, 별, 반짝이, 방울. 밤에는 구름 대신 별, 그리고 달 */
+function sky(opt){let s='';
+  (opt.sky||[]).forEach(([t,x,y,z])=>{
+    if(t==='cloud'){ if(NIGHT) s+=star5(x+22*z,y-16*z,6)+sparkle(x+60*z,y-6*z,7,ART.butter); else s+=cloud(x,y,z); }
+    else if(t==='star') s+=star5(x,y,z);
+    else if(t==='spark') s+=sparkle(x,y,z,NIGHT?ART.butter:ART.white);
+    else if(t==='bub') s+=bub(x,y,z);
+  });
+  if(NIGHT&&opt.moon){const [x,y,r]=opt.moon;s+=`<path d="${moonD(x,y,r)}" fill="${ART.butter}" ${O()}/>`;}
+  return s;}
+
+/* 말풍선: 밝은 카드 + 같은 굵기의 선. 글꼴이 다 불러와진 뒤 폭을 다시 잰다 */
+function bubble(x,y,t,o={}){const h=40,data={cx:x+(o.dx||0),by:y-(o.by??60),ax:x+(o.ax||0),ay:y-(o.ay??58),side:!!o.side,h};
+  return `<g class="bubble" data-b='${JSON.stringify(data)}'><path d="" fill="#FFFFFF" ${O()}/><text x="${f2(data.cx)}" y="${f2(data.by-h/2+1)}" dominant-baseline="central" text-anchor="middle" font-family="Jua" font-size="18" fill="${INK}">${t}</text></g>`;}
+function layoutBubbles(){document.querySelectorAll('g.bubble').forEach(g=>{const b=JSON.parse(g.dataset.b);const tw=g.querySelector('text').getComputedTextLength();
+  const w=tw+36,h=b.h,r=12,l=b.cx-w/2,rr=b.cx+w/2,top=b.by-h,by=b.by;let d;
+  if(b.side){const my=top+h/2;d=`M${l+r} ${top} H${rr-r} A${r} ${r} 0 0 1 ${rr} ${top+r} V${by-r} A${r} ${r} 0 0 1 ${rr-r} ${by} H${l+r} A${r} ${r} 0 0 1 ${l} ${by-r} V${my+6} L${b.ax} ${b.ay} L${l} ${my-6} V${top+r} A${r} ${r} 0 0 1 ${l+r} ${top}Z`;}
+  else{const bx=Math.min(Math.max(b.ax,l+r+9),rr-r-9);d=`M${l+r} ${top} H${rr-r} A${r} ${r} 0 0 1 ${rr} ${top+r} V${by-r} A${r} ${r} 0 0 1 ${rr-r} ${by} H${bx+8} L${b.ax} ${b.ay} L${bx-8} ${by} H${l+r} A${r} ${r} 0 0 1 ${l} ${by-r} V${top+r} A${r} ${r} 0 0 1 ${l+r} ${top}Z`;}
+  g.querySelector('path').setAttribute('d',d);});}
+
+/* ---------------- 마을: 둥근 풀밭 섬 ---------------- */
+let VID=0;const HK={'1,1':'rain','5,1':'night','1,5':'winter','6,5':'family'};
+function rrPts(x0,y0,x1,y1,r,n){const pts=[];const arc=(cx,cy,a0)=>{for(let q=0;q<=n;q++){const a=(a0+90*q/n)*Math.PI/180;pts.push([cx+r*Math.cos(a),cy+r*Math.sin(a)]);}};
+  arc(x1-r,y0+r,-90);arc(x1-r,y1-r,0);arc(x0+r,y1-r,90);arc(x0+r,y0+r,180);return pts;}
+function resample(ch,sp){const out=[ch[0]];let carry=0;for(let q=1;q<ch.length;q++){const [x0,y0]=ch[q-1],[x1,y1]=ch[q];const L=Math.hypot(x1-x0,y1-y0);let d=sp-carry;while(d<=L){out.push([x0+(x1-x0)*d/L,y0+(y1-y0)*d/L]);d+=sp;}carry=L-(d-sp);}
+  const last=ch[ch.length-1],pl=out[out.length-1];if(Math.hypot(last[0]-pl[0],last[1]-pl[1])>sp*.35)out.push(last);else out[out.length-1]=last;return out;}
+const hash=(i,j,s)=>{const x=Math.sin(i*127.1+j*311.7+s*74.7)*43758.5453;return x-Math.floor(x);};
+const DEFMAP=['g g g p g t g','t h g p g h g','g g g p g g t','f p p F p p g','g g g p g g f','g h g p g g h','t g w p t g g'];
+function village(opt={}){
+  const W=opt.w||1152,H=opt.h||748,N=7,TW=opt.tw||104,TH=TW/2,D=TW*.32,k=TW/104;
+  const OX=opt.ox??W/2,OY=opt.oy??(H/2-N*TH/2);
+  const Q=(u,v)=>[OX+(u-v)*TW/2,OY+(u+v)*TH/2],P=(i,j)=>Q(i+.5,j+.5);
+  const map=(opt.map||DEFMAP).map(r=>r.split(' '));
+  let s='';
+  if(!opt.noBg){s+=`<rect width="${W}" height="${H}" fill="${BG}"/>`+sky(opt);}
+  // 섬 윗면(둥근 사각형을 아이소로)과 흙 옆면
+  const pts=rrPts(-.3,-.3,N+.3,N+.3,1.7,12).map(([u,v])=>Q(u,v));
+  let iL=0,iR=0,iB=0;pts.forEach((p,q)=>{if(p[0]<pts[iL][0])iL=q;if(p[0]>pts[iR][0])iR=q;if(p[1]>pts[iB][1])iB=q;});
+  const n=pts.length,walk=(a,b)=>{const r=[];for(let q=a;;q=(q+1)%n){r.push(pts[q]);if(q===b)break;}return r;};
+  const front=walk(iR,iL),back=walk(iL,iR),frontR=walk(iR,iB),frontL=walk(iB,iL);
+  const hw=pts[iR][0]-OX,sh=x=>D*(.7+.3*(1-Math.min(1,((x-OX)/hw)**2)));
+  const band=ch=>'M'+ch.map(p=>`${f2(p[0])} ${f2(p[1])}`).join(' L')+' L'+ch.slice().reverse().map(p=>`${f2(p[0])} ${f2(p[1]+sh(p[0]))}`).join(' L')+'Z';
+  s+=`<path d="${band(frontL)}" fill="${ART.earth}" ${O()}/><path d="${band(frontR)}" fill="${ART.earthD}" ${O()}/>`;
+  const fr=resample(front,22*k);
+  [[.2,.55,1],[.47,.6,.8],[.76,.5,1.1]].forEach(([t,dd,z])=>{const p=fr[Math.round(t*(fr.length-1))];s+=`<ellipse cx="${f2(p[0])}" cy="${f2(p[1]+sh(p[0])*dd+3*k)}" rx="${f2(5.5*k*z)}" ry="${f2(3.3*k*z)}" fill="${ART.pebble}" ${O()}/>`;});
+  let gd='M'+back.map(p=>`${f2(p[0])} ${f2(p[1])}`).join(' L');const ra=f2(22*k*.62);
+  for(let q=1;q<fr.length;q++){const p=fr[q];gd+=(q<2||q>fr.length-2)?` L${f2(p[0])} ${f2(p[1])}`:` A${ra} ${ra} 0 0 1 ${f2(p[0])} ${f2(p[1])}`;}
+  const cid='isl'+(VID++);s+=`<clipPath id="${cid}"><path d="${gd}Z"/></clipPath><path d="${gd}Z" fill="${ART.sage}" ${O()}/>`;
+  // 크림색 길 (선을 먼저, 속을 나중에 그려 교차점이 깔끔함)
+  const a=P(3,0),b=P(3,6),c=P(0,3),d=P(6,3),mm=P(3,3);
+  const p1=`M${f2(a[0])} ${f2(a[1])} Q${f2(mm[0]+10*k)} ${f2(mm[1]-TH)} ${f2(mm[0])} ${f2(mm[1])} T${f2(b[0])} ${f2(b[1])}`;
+  const p2=`M${f2(c[0])} ${f2(c[1])} Q${f2(mm[0]-TW*.6)} ${f2(mm[1]+8*k)} ${f2(mm[0])} ${f2(mm[1])} T${f2(d[0])} ${f2(d[1])}`;
+  const w1=TW*.3,w2=TW*.28,plz=opt.plaza!==false;
+  s+=`<g fill="none" stroke="${OL}" stroke-linecap="round" stroke-linejoin="round"><path d="${p1}" stroke-width="${f2(w1+2*LWc)}"/><path d="${p2}" stroke-width="${f2(w2+2*LWc)}"/></g>`;
+  if(plz) s+=`<ellipse cx="${f2(mm[0])}" cy="${f2(mm[1])}" rx="${f2(TW*.5+LWc)}" ry="${f2(TH*.5+LWc)}" fill="${OL}"/>`;
+  s+=`<g fill="none" stroke="${ART.cream}" stroke-linecap="round" stroke-linejoin="round"><path d="${p1}" stroke-width="${f2(w1)}"/><path d="${p2}" stroke-width="${f2(w2)}"/></g>`;
+  if(plz) s+=`<ellipse cx="${f2(mm[0])}" cy="${f2(mm[1])}" rx="${f2(TW*.5)}" ry="${f2(TH*.5)}" fill="${ART.cream}"/>`;
+  // 연못, 디딤돌, 편집 격자
+  for(let i=0;i<N;i++)for(let j=0;j<N;j++){const [x,y]=P(i,j);if(map[j][i]==='w') s+=pond(x,y,k);}
+  (opt.stones||[]).forEach(([u,v])=>{const [x,y]=Q(u,v);s+=stone(x,y,k);});
+  s+=`<g clip-path="url(#${cid})">`;
+  for(let i=0;i<N;i++)for(let j=0;j<N;j++){const [x,y]=P(i,j);
+    if(opt.edit){const dia=`${f2(x)},${f2(y-TH/2)} ${f2(x+TW/2)},${f2(y)} ${f2(x)},${f2(y+TH/2)} ${f2(x-TW/2)},${f2(y)}`;s+=`<polygon points="${dia}" fill="none" stroke="${OL}" stroke-width="1.5" stroke-dasharray="3 6" opacity=".32"/>`;
+      (opt.hl||[]).forEach(h=>{if(h[0]===i&&h[1]===j) s+=`<polygon points="${dia}" fill="${h[2]==='ok'?ART.okFill:ART.noFill}" stroke="${h[2]==='ok'?ART.okLine:ART.noLine}" stroke-width="2" stroke-linejoin="round"/>`;});}}
+  s+='</g>';
+  // 물건: 뒤에서 앞으로
+  const objs=[];for(let i=0;i<N;i++)for(let j=0;j<N;j++){const cc=map[j][i];if('thfF'.includes(cc))objs.push({i,j,c:cc});}
+  (opt.extra||[]).forEach(o=>{if(o.c==='fence')objs.push({...o,i:(o.u0+o.u1)/2-.5,j:(o.v0+o.v1)/2-.5});else objs.push(o);});
+  const taken=new Set(objs.map(o=>`${Math.round(o.i)},${Math.round(o.j)}`)),dens=opt.deco??(opt.edit?.28:.42);
+  for(let i=0;i<N;i++)for(let j=0;j<N;j++){if(map[j][i]!=='g'||taken.has(`${i},${j}`))continue;if(hash(i,j,1)>dens)continue;
+    objs.push({i:i+(hash(i,j,2)-.5)*.5,j:j+(hash(i,j,3)-.5)*.5,c:'deco',t:Math.floor(hash(i,j,4)*3)});}
+  objs.sort((p,q)=>(p.i+p.j)-(q.i+q.j)||p.i-q.i);
+  for(const o of objs){const [x,y]=P(o.i,o.j);
+    if(o.c==='t') s+=tree(x,y,k,(o.i+o.j)%2);else if(o.c==='f') s+=flowerPatch(x,y,k);else if(o.c==='F') s+=fountain(x,y,k);
+    else if(o.c==='h') s+=house(HK[`${o.i},${o.j}`]||'rain',x,y,k*1.1);
+    else if(o.c==='lamp') s+=lamp(x,y,k);else if(o.c==='bench') s+=bench(x,y,k);
+    else if(o.c==='fence') s+=fence(Q(o.u0,o.v0),Q(o.u1,o.v1),k);
+    else if(o.c==='deco') s+=deco(x,y,k,o.t);
+    else if(o.c==='res'){const sz=TW*.68;
+      s+=o.sel?`<ellipse cx="${f2(x)}" cy="${f2(y)}" rx="${f2(TW*.27)}" ry="${f2(TW*.1)}" fill="${ART.peri}" ${O()}/>`:`<ellipse cx="${f2(x)}" cy="${f2(y)}" rx="${f2(TW*.2)}" ry="${f2(TW*.07)}" fill="${ART.sage2}"/>`;
+      s+=`<g transform="translate(${f2(x-sz/2)} ${f2(y-sz*.9)})">${blob(sz,o.k)}</g>`;}
+    else if(o.c==='ghost') s+=`<g opacity=".8">${fountain(x,y,k)}</g>`;
+  }
+  (opt.bubbles||[]).forEach(([i,j,t,o={}])=>{const [x,y]=P(i,j);s+=bubble(x,y,t,o);});
+  return `<svg class="art" viewBox="0 0 ${W} ${H}" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" style="display:block">${s}</svg>`;
+}
+
+/* ---------------- 공통 ---------------- */
+function nav(active,top=200){const it=[['home','마을'],['book','도감'],['chart','기록'],['gear','설정']];
+  return `<div class="nav" style="top:${top}px">${it.map(([i,t])=>{const on=t===active;return `<div class="it ${on?'on':''}">${IC[i](22,on?INK:FG2)}${t}</div>`;}).join('')}</div>`;}
+function brand(c=FG2){return `<div style="display:flex;align-items:center;gap:8px">${logo(22)}<span class="disp" style="font-size:17px;color:${c}">Pleos Village</span></div>`;}
+const VOBJ=[{i:2,j:2,c:'res',k:'rain',sel:true},{i:4,j:2,c:'res',k:'night'},{i:2,j:5,c:'res',k:'winter'},{i:5,j:6,c:'res',k:'family'},{i:6,j:3,c:'lamp'},{i:0,j:2,c:'lamp'},{i:2,j:4,c:'bench'},
+  {c:'fence',u0:.9,v0:.25,u1:2.8,v1:.25},{c:'fence',u0:.25,v0:4.1,u1:.25,v1:5.7}];
+const VSTONES=[[4.15,1.65],[4.6,1.55],[5.05,1.6]];
+
+/* 화면 2: 마을 */
+document.getElementById('c2app').innerHTML=`
+ <div style="position:absolute;inset:0">${village({extra:VOBJ,stones:VSTONES,bubbles:[[2,2,'11월 7일에 왔어요',{dx:146,by:48,ax:26,ay:40,side:1}]],
+   sky:[['cloud',330,76,1.0],['cloud',1000,222,.8],['cloud',985,612,.8],['star',480,118,7],['star',1092,330,6],['star',262,560,6],['star',790,676,5],['spark',566,62,9],['spark',1070,470,8],['spark',246,170,7],['bub',1046,524,4],['bub',1060,508,2.6]],
+   moon:[600,92,20],ox:660,oy:156,tw:110})}</div>
+ <div style="position:absolute;left:44px;top:34px;z-index:5">${brand()}<div class="disp" style="font-size:38px;margin-top:12px">우리 마을</div><div style="font-size:15px;color:${FG2};margin-top:6px">11월의 마을 · 주민 4명</div></div>
+ ${nav('마을',240)}
+ <div class="card" style="position:absolute;right:44px;top:34px;display:flex;align-items:center;padding:12px 4px;z-index:5">
+   <div style="padding:0 22px"><div class="lab">이번 주 평균</div><div class="val" style="margin-top:2px">94<span style="font-size:14px;color:${INK2};font-weight:500"> 점 · ↑8</span></div></div>
+   <div style="padding:0 22px;border-left:2px dashed var(--cline)"><div class="lab">포인트</div><div class="val" style="margin-top:2px">3,240</div></div>
+   <div style="padding:0 22px;border-left:2px dashed var(--cline)"><div class="lab">오늘 남은 기회</div><div class="val" style="margin-top:2px">1<span style="font-size:14px;color:${INK2};font-weight:500"> / 2</span></div></div></div>
+ <div class="card" style="position:absolute;left:44px;bottom:38px;width:446px;padding:16px 20px;display:flex;gap:16px;align-items:center;z-index:5">
+   ${blob(64,'rain')}<div><div class="disp" style="font-size:21px">비 주민 <span style="font-family:'Pretendard Variable';font-size:13px;font-weight:600;color:${INK2}">No.01</span></div>
+   <div style="font-size:15px;color:${INK2};margin-top:4px;line-height:1.45">11월 7일, 비 오는 퇴근길에 만났어요.<br>그날 안전 점수 100점.</div></div></div>
+ <div style="position:absolute;right:44px;bottom:38px;z-index:5"><div class="btn p">${IC.brush(21,BTNFG)}마을 꾸미기</div></div>`;
+
+/* 화면 1: 도착 요약 */
+function panelDeco(){let s='';
+  [[56,124],[474,262],[38,300],[84,414],[470,410],[150,92],[34,524],[482,556],[118,240],[210,560]].forEach(([x,y],q)=>{s+=drop(x,y,q%3?5.5:6.5);});
+  s+=cloud(24,204,.72)+cloud(404,330,.62)+sparkle(452,498,8)+sparkle(112,176,6.5,ART.butter)+star5(474,204,6)+bub(60,476,4)+bub(72,462,2.6);
+  s+=`<ellipse cx="258" cy="458" rx="176" ry="32" fill="${ART.sage}" ${O()}/>`;
+  s+=leaf(102,462,20,-152)+leaf(146,470,18,-38)+flower(120,450,13)+flower(156,462,10,ART.pink,ART.butter);
+  s+=leaf(368,468,19,-142)+leaf(414,462,18,-28)+flower(386,450,12.5)+flower(414,462,9)+leaf(326,476,12,-125,ART.sage2)+leaf(328,476,12,-55,ART.sage2);
+  return s;}
+document.getElementById('c1app').innerHTML=`
+ <div style="position:absolute;left:32px;top:32px;bottom:32px;width:520px;background:var(--panel);border:2px solid var(--ol);border-radius:18px;overflow:hidden;color:${INK}">
+   <svg class="art" width="516" height="680" style="position:absolute;left:0;top:0">${panelDeco()}</svg>
+   <div style="position:absolute;left:38px;top:34px">${brand(INK2)}</div>
+   <div style="position:absolute;left:50%;top:142px;transform:translateX(-50%)">${blob(320,'rain',false,{lw:3})}</div>
+   <svg class="art" style="position:absolute;left:0;top:0" width="516" height="680"><path d="M456 112 C474 136 468 172 428 196" fill="none" ${O()}/><path d="M433.5 187.6 L428 196 L438 196.6" fill="none" ${O()}/>
+     <text x="484" y="98" text-anchor="end" font-family="Jua" font-size="18" fill="${INK}">우산은 와이퍼에서 왔어요</text></svg>
+   <div style="position:absolute;left:38px;bottom:34px;right:38px;display:flex;justify-content:space-between;align-items:flex-end">
+     <div><div style="font-size:14px;font-weight:500;color:${INK2}">No.01 · 확률 40%</div><div class="disp" style="font-size:32px;margin-top:4px">비 주민</div></div>
+     <div style="font-size:14px;font-weight:500;color:${INK2};text-align:right;line-height:1.45">새로 만남<br>11월 14일</div></div>
+ </div>
+ <div style="position:absolute;left:598px;right:48px;top:44px;bottom:38px">
+   <div style="font-size:15px;font-weight:500;color:${FG2}">11월 14일 토요일 오후 1:58 · 휴게소 도착</div>
+   <div class="disp" style="font-size:40px;line-height:1.3;margin-top:12px">비 오는 날,<br>비 주민이 따라왔어요</div>
+   <div style="display:flex;align-items:flex-end;gap:14px;margin-top:20px"><div class="disp" style="font-size:74px;line-height:.9">100</div><div style="padding-bottom:8px"><div style="font-size:15px;font-weight:700">안전 점수</div><div style="font-size:14px;color:${FG2};margin-top:1px">감점 없이 다녀왔어요</div></div></div>
+   <div style="position:relative;margin-top:16px;height:34px"><div style="position:absolute;left:0;right:0;top:0;height:14px;border:2px solid var(--ol);border-radius:8px;background:${ART.mint2}"></div>
+     <div style="position:absolute;left:80%;top:-3px;width:2px;height:20px;background:var(--ol);border-radius:1px"></div><div style="position:absolute;left:80%;top:19px;transform:translateX(-50%);font-size:12px;font-weight:600;color:${FG2}">80</div></div>
+   <div class="card" style="margin-top:8px;padding:2px 20px">
+     ${[['운전 시간','1시간 50분'],['오늘의 환경','비 · 가족 동승'],['함께 탄 사람','4명'],['포인트','+20']].map(([a,b],q)=>`<div style="display:flex;justify-content:space-between;padding:11px 0;font-size:17px;${q?'border-top:2px dashed var(--cline)':''}"><span style="color:${INK2};font-weight:500">${a}</span><span style="font-weight:700">${b}</span></div>`).join('')}</div>
+   <div style="display:flex;align-items:center;gap:12px;margin-top:18px">${blob(46,'family',true)}<div style="font-size:15px;line-height:1.5;color:${FG2}"><b style="color:${FG};font-weight:700">가족 주민은 이번엔 못 만났어요.</b><br>다음 판정에서는 꼭 만나요 (천장까지 1번).</div></div>
+   <div style="position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:12px"><div style="font-size:14px;font-weight:500;color:${FG2}">오늘 기회 1번 남음</div><div style="flex:1"></div><div class="btn s">닫기</div><div class="btn p">마을로 데려가기 ${IC.arrow(20,BTNFG)}</div></div>
+ </div>`;
+
+/* 화면 3: 도감 (우표첩) */
+function perfPath(w,h,r,sp){const seg=len=>{const n=Math.max(2,Math.round(len/sp));return [n,len/n];};let d='M0 0',n,st;
+  [n,st]=seg(w);for(let q=0;q<n;q++){const c=st*(q+.5);d+=` L${f2(c-r)} 0 A${r} ${r} 0 0 0 ${f2(c+r)} 0`;}d+=` L${w} 0`;
+  [n,st]=seg(h);for(let q=0;q<n;q++){const c=st*(q+.5);d+=` L${w} ${f2(c-r)} A${r} ${r} 0 0 0 ${w} ${f2(c+r)}`;}d+=` L${w} ${h}`;
+  [n,st]=seg(w);for(let q=0;q<n;q++){const c=w-st*(q+.5);d+=` L${f2(c+r)} ${h} A${r} ${r} 0 0 0 ${f2(c-r)} ${h}`;}d+=` L0 ${h}`;
+  [n,st]=seg(h);for(let q=0;q<n;q++){const c=h-st*(q+.5);d+=` L0 ${f2(c+r)} A${r} ${r} 0 0 0 0 ${f2(c-r)}`;}
+  return d+'Z';}
+function stampBox(w,h,tint,inner,inset=12){return `<div style="position:relative;width:${w}px;height:${h}px"><svg class="art" width="${w}" height="${h}" style="position:absolute;left:0;top:0;overflow:visible"><path transform="translate(1.5 1.5)" d="${perfPath(w-3,h-3,3.4,17)}" fill="#FFFFFF" ${O()}/><rect x="${inset}" y="${inset}" width="${w-2*inset}" height="${h-2*inset}" rx="8" fill="${tint}" ${O()}/></svg><div style="position:absolute;left:${inset}px;top:${inset}px;right:${inset}px;bottom:${inset}px">${inner}</div></div>`;}
+const DEX=[['rain',1,'11월 7일'],['night',1,'11월 6일'],['family',1,'11월 9일'],['winter',1,'11월 10일'],['long',0,'천장까지 1번'],['charge',0,'천장까지 2번'],['sea',-1,'출시 이후'],['mountain',-1,'출시 이후']];
+const ROT=[-.8,.5,-.3,.7,.4,-.6,.9,-.4];
+function stamp([k,have,st],q){const e=ENV[k],met=have===1;
+  const inner=`<span style="position:absolute;left:9px;top:7px;font-size:11px;font-weight:700;color:${INK}">No.${e.no}</span>${met?`<span style="position:absolute;right:9px;top:7px;font-size:11px;font-weight:700;color:${INK}">${e.p}</span>`:''}
+    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding-top:8px"><div style="${have===-1?'opacity:.6':''}">${met?blob(112,k):blob(96,k,true)}</div></div>`;
+  return `<div style="transform:rotate(${ROT[q]}deg)">${stampBox(214,164,met?e.c:ART.tint.locked,inner)}
+   <div style="padding:10px 4px 0"><div class="disp" style="font-size:19px">${e.name}</div><div style="font-size:13px;color:${FG2};margin-top:3px">${e.env}</div>
+   <div style="font-size:13px;font-weight:700;margin-top:4px;color:${met?OK:have===0?WARN:FG2}">${met?st+' 만남':have===0?`${st} · 확률 ${e.p}`:st}</div></div></div>`;}
+document.getElementById('c3app').innerHTML=`
+ <div style="position:absolute;left:44px;top:34px">${brand()}</div>
+ ${nav('도감',204)}
+ <div style="position:absolute;left:174px;right:44px;top:66px"><div style="display:flex;align-items:flex-end;justify-content:space-between">
+   <div><div class="disp" style="font-size:36px">주민 도감</div><div style="font-size:15px;color:${FG2};margin-top:6px">6명 중 4명을 만났어요. 안전 점수 80점 이상인 운행에서, 하루 두 번까지 만날 수 있어요.</div></div>
+   <div style="font-size:15px;font-weight:600;text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:1.5px">확률과 천장 보기</div></div>
+   <div style="display:flex;gap:10px;margin-top:16px"><span class="tab on">전체</span><span class="tab">만남</span><span class="tab">아직</span><span class="tab">준비 중</span></div></div>
+ <div style="position:absolute;left:174px;right:44px;top:214px;display:grid;grid-template-columns:repeat(4,214px);gap:16px 26px">${DEX.map(stamp).join('')}</div>`;
+
+/* 화면 4: 좁은 배치 */
+document.getElementById('c4app').innerHTML=`
+ <div style="position:absolute;left:0;top:0;bottom:0;width:571px;border-radius:20px;overflow:hidden;background:#1b2331"><svg width="571" height="748" style="position:absolute;inset:0"><rect width="571" height="748" fill="#1b2331"/><g stroke="#2b3547" stroke-width="16" fill="none"><path d="M-20 520 L600 380"/><path d="M150 -20 L300 780"/><path d="M-20 160 L600 210"/></g><circle cx="262" cy="455" r="16" fill="#3b82f6" stroke="#fff" stroke-width="5"/></svg><div style="position:absolute;left:20px;top:20px;background:#0f172a;border-radius:14px;padding:12px 18px;font-size:18px;color:#c9d1de">내비게이션 (다른 앱)</div></div>
+ <div style="position:absolute;left:581px;top:0;bottom:0;right:0;border-radius:20px;overflow:hidden;background:var(--bg);color:var(--fg)">
+   <div style="position:absolute;inset:0">${village({w:571,h:748,extra:VOBJ,stones:VSTONES,bubbles:[[2,2,'11월 7일에 왔어요',{dx:134,by:30,ax:14,ay:26,side:1}]],
+     sky:[['cloud',36,214,.72],['star',228,150,6],['spark',470,170,7],['star',520,476,5],['spark',60,470,6],['bub',500,250,3.5]],moon:[262,126,15],ox:286,oy:206,tw:68,deco:.4})}</div>
+   <div style="position:absolute;left:24px;top:24px;z-index:5">${brand()}<div class="disp" style="font-size:28px;margin-top:8px">우리 마을</div></div>
+   <div class="card" style="position:absolute;right:20px;top:22px;padding:10px 16px;text-align:right;z-index:5"><div class="lab">포인트</div><div class="val" style="font-size:19px">3,240</div><div class="lab" style="margin-top:6px">오늘 기회</div><div class="val" style="font-size:19px">1 / 2</div></div>
+   <div class="card" style="position:absolute;left:20px;right:20px;bottom:164px;padding:12px 14px;display:flex;gap:12px;align-items:center;z-index:5">${blob(48,'rain')}<div><div class="disp" style="font-size:18px">비 주민</div><div style="font-size:13px;color:${INK2};margin-top:2px">11월 7일, 비 오는 퇴근길에 만났어요</div></div></div>
+   <div style="position:absolute;right:20px;bottom:94px;z-index:5"><div class="btn p" style="height:52px;font-size:17px;padding:0 18px">${IC.brush(18,BTNFG)}마을 꾸미기</div></div>
+   <div style="position:absolute;left:0;right:0;bottom:0;height:78px;border-top:2px solid var(--ol);background:var(--card);display:grid;grid-template-columns:repeat(4,1fr);align-items:center;z-index:5">
+     ${[['home','마을',1],['book','도감'],['chart','기록'],['gear','설정']].map(([i,t,on])=>`<div style="display:flex;flex-direction:column;align-items:center;gap:3px;font-size:13px;font-weight:${on?700:500};color:${on?INK:INK2}">${on?`<div style="background:var(--sel);border:2px solid var(--ol);border-radius:12px;padding:2px 14px;display:flex">${IC[i](22,INK)}</div>`:`<div style="padding:4px 16px;display:flex">${IC[i](22,INK2)}</div>`}${t}</div>`).join('')}</div>
+ </div>`;
+
+/* 화면 5: 이웃 교류 (엽서) */
+function smallStamp(k,w=150,tint){const e=ENV[k]||ENV.rain;return stampBox(w,Math.round(w*.86+24),tint||e.c,`<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding-top:4px">${blob(w*.66,k)}</div>`);}
+document.getElementById('c5app').innerHTML=`
+ <div style="position:absolute;left:44px;top:34px">${brand()}<div class="disp" style="font-size:36px;margin-top:14px">이번 주 이웃 교류</div><div style="font-size:15px;color:${FG2};margin-top:6px">두 마을이 모두 주간 목표를 채우면, 두 마을에 새 주민이 한 명씩 찾아와요. (확대 계획)</div></div>
+ <div class="card" style="position:absolute;left:44px;right:44px;top:180px;height:292px;display:flex;align-items:center;gap:28px;padding:0 44px">
+   <div style="text-align:center"><div style="transform:rotate(-0.8deg);display:inline-block">${smallStamp('rain')}</div><div class="disp" style="font-size:18px;margin-top:10px">우리 마을 · 비 주민</div><div style="font-size:13px;color:${COK};font-weight:700;margin-top:2px">주간 목표 5/5</div></div>
+   <div class="disp" style="font-size:32px;color:${INK2}">+</div>
+   <div style="text-align:center"><div style="transform:rotate(0.6deg);display:inline-block">${smallStamp('night')}</div><div class="disp" style="font-size:18px;margin-top:10px">삼촌네 마을 · 밤 주민</div><div style="font-size:13px;color:${COK};font-weight:700;margin-top:2px">주간 목표 5/5</div></div>
+   <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px">${IC.arrow(36,INK2)}<div class="disp" style="font-size:16px;color:${INK2};text-align:center">둘 다 목표를 채운 주</div></div>
+   <div style="text-align:center"><div style="transform:rotate(-0.5deg);display:inline-block">${smallStamp('rain_moon',184,ART.tint.mix)}</div><div class="disp" style="font-size:22px;margin-top:10px">달을 든 비 주민</div><div style="font-size:13px;color:${INK2};margin-top:2px">몸 색은 우리 주민, 소품은 이웃 주민 (공개 규칙)</div></div>
+ </div>
+ <div style="position:absolute;left:44px;right:44px;top:504px">
+   <div class="hair"></div><div style="display:flex;align-items:center;padding:15px 0"><div class="disp" style="font-size:19px;width:200px">삼촌네 마을</div><div style="flex:1;font-size:15px;color:${FG2}">이번 주 목표 달성</div><div style="font-size:15px;font-weight:700;color:${OK}">이번 주 교류 완료</div></div>
+   <div class="hair"></div><div style="display:flex;align-items:center;padding:15px 0"><div class="disp" style="font-size:19px;width:200px">회사 동료 마을</div><div style="flex:1;font-size:15px;color:${FG2}">80점 이상 운행 3/5 · 이웃이 목표를 채우면 새 주민이 와요</div><div style="width:160px;height:14px;border:2px solid var(--ol);border-radius:8px;background:#FFFFFF;overflow:hidden"><div style="width:60%;height:100%;background:${ART.peri};border-right:2px solid var(--ol)"></div></div></div><div class="hair"></div></div>
+ <div style="position:absolute;left:44px;right:44px;bottom:34px;display:flex;align-items:center;gap:20px"><div class="btn p" style="height:54px;font-size:18px">이웃 초대하기</div><div style="font-size:14px;color:${FG2}">채팅은 없어요. 운전 기록과 위치는 공유하지 않고, 주간 목표 달성 여부와 대표 주민만 공유해요.</div></div>`;
+
+/* 화면 6: 꾸미기 */
+function item(svgInner,name,cost,locked=false,sel=false){return `<div style="width:112px;text-align:center">
+  <div style="height:92px;border:2px solid var(--ol);border-radius:14px;background:${sel?ART.peri:'#FFFFFF'};display:flex;align-items:center;justify-content:center"><svg class="art" width="96" height="74" viewBox="0 0 112 86" style="overflow:visible;${locked?'opacity:.45':''}">${svgInner}</svg></div>
+  <div class="disp" style="font-size:15px;margin-top:6px;color:${FG}">${name}</div><div style="font-size:13px;font-weight:600;color:${FG2};margin-top:1px;display:flex;align-items:center;justify-content:center;gap:3px">${locked?IC.lock(13,FG2):''}${cost} 포인트</div></div>`;}
+const EOBJ=[{i:2,j:2,c:'res',k:'rain'},{i:4,j:2,c:'res',k:'night'},{i:2,j:5,c:'res',k:'winter'},{i:5,j:6,c:'res',k:'family'},{i:4,j:4,c:'ghost'},{c:'fence',u0:.9,v0:.25,u1:2.8,v1:.25}];
+const lantern=`<path d="M56 8 V20" fill="none" ${O()}/><rect x="48" y="18" width="16" height="6" rx="2.5" fill="${ART.peri}" ${O()}/><ellipse cx="56" cy="40" rx="18" ry="16" fill="${ART.lav}" ${O()}/><ellipse cx="56" cy="40" rx="7.5" ry="8" fill="${ART.butter}" ${O()}/><rect x="50" y="55" width="12" height="5" rx="2" fill="${ART.peri}" ${O()}/><path d="M56 60 V70" fill="none" ${O()}/>`;
+const mountain=`<path d="M12 74 L44 26 Q48 20 52 26 L64 44 L73 33 Q77 28 81 33 L102 74 Z" fill="${ART.mint2}" ${O()}/><path d="M36 38 L44 26 Q48 20 52 26 L60 38 L54 35 L48 40 L42 35 Z" fill="#FFFFFF" ${O()}/>${flower(26,70,6)}`;
+document.getElementById('c6app').innerHTML=`
+ <div style="position:absolute;inset:0">${village({map:['g t g p g t g','t h g p g h g','g g g p g g t','f p p p p p g','g g g p g g f','g h g p g g h','t g w p t g g'],extra:EOBJ,ox:610,oy:112,tw:96,edit:true,plaza:false,hl:[[4,4,'ok'],[5,0,'no']],bubbles:[[4,4,'분수, 여기 둘까요?',{dx:-30,by:56,ay:46}]],
+   sky:[['cloud',84,156,1.05],['star',214,250,6],['spark',1040,300,8],['star',1010,430,5],['bub',236,330,4],['bub',250,318,2.6],['spark',140,420,6]],moon:[1060,200,20]})}</div>
+ <div style="position:absolute;left:44px;right:44px;top:30px;display:flex;align-items:center;gap:14px;z-index:5">
+   <div class="disp" style="font-size:32px;margin-right:8px">꾸미기</div>
+   <div class="ibtn">${IC.undo(20,INK)}</div><div class="ibtn">${IC.redo(20,INK)}</div>
+   <div style="font-size:14px;color:${FG2};margin-left:8px">초록 칸에 놓을 수 있어요. 빨간 칸은 이미 차 있어요.</div><div style="flex:1"></div>
+   <div><div class="lab" style="text-align:right">포인트</div><div class="val" style="font-size:20px">3,240</div></div><div class="btn p" style="height:52px;font-size:18px">완료</div></div>
+ <div style="position:absolute;left:30px;right:30px;bottom:24px;height:214px;background:var(--surface2);border:2px solid var(--ol);border-radius:18px;padding:12px 22px;z-index:5">
+   <div style="display:flex;gap:8px;align-items:center"><span class="tab">집</span><span class="tab">길</span><span class="tab on">자연</span><span class="tab">장식</span><div style="flex:1"></div><span style="font-size:13px;color:${FG2}">아이템은 안전 운전 포인트로 얻어요</span></div>
+   <div style="display:flex;gap:18px;margin-top:10px">
+     ${item(tree(56,80,1),'나무','30')}${item(flowerPatch(56,60,1.5),'꽃밭','20')}${item(fountain(56,72,1.05),'분수','120',false,true)}${item(lamp(56,80,1),'가로등','40')}
+     ${item(bench(56,68,1.3),'벤치','50')}${item(lantern,'등불','80',true)}${item(mountain,'작은 산','150',true)}
+   </div></div>`;
+
+document.getElementById('thumbV').innerHTML=village({w:520,h:330,extra:VOBJ,stones:VSTONES,ox:260,oy:54,tw:62,deco:.4,sky:[['star',70,70,6],['spark',452,64,7],['star',484,250,5],['spark',38,236,6]],moon:[440,60,14]});
+document.getElementById('thumbR').innerHTML=`<div style="text-align:center">${blob(170,'rain',false,{lw:3})}<div class="disp" style="font-size:24px;color:${FG};margin-top:4px">비 주민</div></div><div style="text-align:center">${blob(170,'family',false,{lw:3})}<div class="disp" style="font-size:24px;color:${FG};margin-top:4px">가족 주민</div></div>`;
+
+layoutBubbles();document.fonts.ready.then(layoutBubbles);
+</script></body></html>

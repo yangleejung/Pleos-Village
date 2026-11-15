@@ -1,0 +1,191 @@
+<resources>
+    <string name="app_name">Pleos Village</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="recording_channel_name">운행 기록</string>
+    <string name="recording_notification_title">운행을 기록하고 있어요</string>
+
+    <!-- Common -->
+    <string name="nav_village">마을</string>
+    <string name="nav_dex">도감</string>
+    <string name="nav_records">기록</string>
+    <string name="nav_settings">설정</string>
+    <string name="close">닫기</string>
+    <string name="today_chances">오늘 남은 기회</string>
+    <string name="today_chance_short">오늘 기회</string>
+    <string name="of_total"> / %1$d</string>
+    <string name="points">포인트</string>
+    <string name="points_plus">+%1$d</string>
+    <string name="probability">확률 %1$d%%</string>
+    <string name="ceiling_left">천장까지 %1$d번</string>
+    <string name="coming_soon">출시 이후</string>
+
+    <!-- Arrival summary -->
+    <string name="arrival_at">%1$s · 도착</string>
+    <string name="arrival_title_met">%1$s,\n%2$s 따라왔어요</string>
+    <string name="arrival_title_missed">이번엔 주민을\n만나지 못했어요</string>
+    <string name="arrival_title_below">안전 점수 %1$d점,\n다음엔 80점을 넘겨 봐요</string>
+    <string name="arrival_title_short">짧은 운행은\n기록만 해요</string>
+    <string name="arrival_title_limit">오늘은 만날 기회 2번을\n다 썼어요</string>
+    <string name="arrival_title_none">오늘은 새로 만날 수 있는\n환경이 없었어요</string>
+    <string name="state_below_sub">80점 이상이어야 주민을 만날 수 있어요</string>
+    <string name="state_short_sub">주행 시간이 10분 넘는 운행에서 주민을 만날 수 있어요</string>
+    <string name="state_limit_sub">내일 다시 만나요</string>
+    <string name="state_none_hint">%1$s \"%2$s\"에서 만날 수 있어요</string>
+    <string name="score_label">안전 점수</string>
+    <string name="score_clean">감점 없이 다녀왔어요</string>
+    <string name="score_minus">감점 %1$d점</string>
+    <string name="row_duration">운전 시간</string>
+    <string name="row_env">오늘의 환경</string>
+    <string name="row_people">함께 탄 사람</string>
+    <string name="row_points">포인트</string>
+    <string name="row_deduction">%1$s %2$d번</string>
+    <string name="people_count">%1$d명</string>
+    <string name="env_none">없음</string>
+    <string name="missed_title">%1$s 이번엔 못 만났어요.</string>
+    <string name="missed_next">다음 판정에서는 꼭 만나요 (천장까지 1번).</string>
+    <string name="missed_more">천장까지 %1$d번 남았어요 · 확률 %2$d%%</string>
+    <string name="met_also">%1$s도 만났어요.</string>
+    <string name="chances_left">오늘 기회 %1$d번 남음</string>
+    <string name="go_village">마을로 데려가기</string>
+    <string name="met_new">새로 만남</string>
+    <string name="panel_meta">%1$s · 확률 %2$d%%</string>
+    <string name="panel_unknown">아직 비어 있는 자리</string>
+    <string name="panel_next">다음 운행에서 만나요</string>
+    <string name="prop_rain">우산은 와이퍼에서 왔어요</string>
+    <string name="prop_night">달은 하향등에서 왔어요</string>
+    <string name="prop_family">작은 친구는 뒷좌석에서 왔어요</string>
+    <string name="prop_winter">목도리는 성에 제거에서 왔어요</string>
+    <string name="prop_long">배낭은 긴 운행에서 왔어요</string>
+    <string name="prop_charge">번개 머리는 충전에서 왔어요</string>
+    <string name="unchecked_item">%1$s: 이 차량에서는 확인하지 않음</string>
+
+    <!-- Village -->
+    <string name="weekly_average">이번 주 평균</string>
+    <string name="weekly_unit"> 점 · ↑%1$d</string>
+    <string name="decorate">마을 꾸미기</string>
+    <string name="met_on">%1$s에 왔어요</string>
+    <string name="empty_village">첫 주민을 기다리는 자리</string>
+    <string name="zoom_in">확대</string>
+    <string name="zoom_out">축소</string>
+
+    <!-- Dex -->
+    <string name="dex_title">주민 도감</string>
+    <string name="dex_desc">%1$d명 중 %2$d명을 만났어요. 안전 점수 80점 이상인 운행에서, 하루 두 번까지 만날 수 있어요.</string>
+    <string name="dex_rule">안전 점수 80점 이상인 운행에서, 하루 2번까지 만날 수 있어요</string>
+    <string name="filter_all">전체</string>
+    <string name="filter_met">만남</string>
+    <string name="filter_not_yet">아직</string>
+    <string name="filter_soon">준비 중</string>
+    <string name="dex_odds">확률 %1$d%% · 천장 %2$d번째</string>
+    <string name="dex_met_on">%1$s 만남</string>
+    <string name="dex_not_yet">아직 못 만났어요</string>
+    <string name="detail_missed">지금까지 못 만난 횟수 %1$d번</string>
+    <string name="detail_env">만나는 환경</string>
+    <string name="detail_met_day">만난 날</string>
+    <string name="detail_show_in_village">마을에서 보기</string>
+    <string name="odds_title">확률 정보</string>
+    <string name="odds_note">천장 번째 판정에서는 반드시 만나요.</string>
+
+    <!-- Records -->
+    <string name="records_title">운전 기록</string>
+    <string name="records_tab_week">이번 주</string>
+    <string name="records_tab_trips">운행</string>
+    <string name="records_week_desc">%1$s · 10분이 넘는 운행만 셉니다</string>
+    <string name="records_days_title">요일별 안전 점수</string>
+    <string name="records_day_none">운행 없음</string>
+    <string name="records_trips_desc">최근 운행 %1$d개 · 누르면 그날의 도착 요약을 다시 볼 수 있어요</string>
+    <string name="records_short">짧은 운행</string>
+    <string name="records_no_env">환경 없음</string>
+    <string name="score_badge">%1$d점</string>
+
+    <!-- Settings -->
+    <string name="settings_title">설정</string>
+    <string name="settings_checks">이 차량에서 확인하는 항목</string>
+    <string name="settings_checks_desc">차량이 알려 주지 않는 항목은 점수와 주민 판정에 쓰지 않아요</string>
+    <string name="settings_check_off">이 차량에서는 확인하지 않아요</string>
+    <string name="settings_odds">확률 정보</string>
+    <string name="settings_odds_desc">모든 주민의 환경, 확률, 천장을 공개해요</string>
+    <string name="settings_odds_open">확률 정보</string>
+    <string name="settings_data">데이터</string>
+    <string name="settings_data_desc">모든 기록은 이 차 안에만 저장돼요. 위치는 저장하지 않아요.</string>
+    <string name="settings_data_clear">기록 지우기</string>
+    <string name="settings_data_confirm_title">기록을 모두 지울까요?</string>
+    <string name="settings_data_confirm_body">운행 기록, 만난 주민, 마을, 포인트가 모두 지워져요. 되돌릴 수 없어요.</string>
+    <string name="settings_data_confirm_ok">지우기</string>
+    <string name="settings_data_cleared">기록 지우기는 판정 로직(2단계)과 함께 연결돼요</string>
+    <string name="cancel">취소</string>
+    <string name="settings_onboarding">시작 안내 다시 보기</string>
+    <string name="settings_version">버전 %1$s</string>
+    <string name="settings_debug_left">%1$d번 더 누르면 디버그 메뉴가 열려요</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_1">운전하면 자동으로 기록돼요.\n운전 중에는 화면이 보이지 않아요.</string>
+    <string name="onboarding_2">안전 점수 80점 이상이면,\n그날의 날씨와 함께 탄 사람에 맞는 주민을 만나요.</string>
+    <string name="onboarding_3">주민이 모여 우리 가족 마을이 돼요.</string>
+    <string name="onboarding_skip">건너뛰기</string>
+    <string name="onboarding_next">다음</string>
+    <string name="onboarding_start">시작하기</string>
+
+    <!-- Debug -->
+    <string name="debug_title">디버그 메뉴</string>
+    <string name="debug_desc">디버그 빌드에서만 보여요. 시연 준비: 시간 배율 60×, 속도 필터 끔, 데이터 초기화, 시연 데이터 불러오기 (SPEC 10장).</string>
+    <string name="debug_demo">시연 데이터 불러오기 (천장 직전 상태)</string>
+    <string name="debug_pending">2단계에서 연결</string>
+    <string name="debug_diag">진단 (차량 값)</string>
+    <string name="debug_gallery">부품·그림 모음</string>
+    <string name="debug_arrival">도착 요약 상태 보기</string>
+    <string name="debug_onboarding_reset">처음 실행 상태로 (시작 안내 다시)</string>
+
+    <!-- Decorate -->
+    <string name="decor_title">꾸미기</string>
+    <string name="decor_done">완료</string>
+    <string name="decor_tab_houses">집</string>
+    <string name="decor_tab_paths">길</string>
+    <string name="decor_tab_nature">자연</string>
+    <string name="decor_tab_deco">장식</string>
+    <string name="decor_drawer_note">아이템은 안전 운전 포인트로 얻어요</string>
+    <string name="decor_hint_idle">아이템을 끌어다 놓거나, 누르고 칸을 누르세요. 놓인 물건을 누르면 옮길 수 있어요.</string>
+    <string name="decor_hint_place">초록 칸에 놓을 수 있어요. 빨간 칸은 이미 차 있어요.</string>
+    <string name="decor_hint_selected">옮기기, 돌리기, 보관함으로 보내기를 할 수 있어요.</string>
+    <string name="decor_bubble_ok">%1$s, 여기 둘까요?</string>
+    <string name="decor_bubble_no">여기는 이미 차 있어요</string>
+    <string name="decor_pick_tile">%1$s: 놓을 칸을 누르세요</string>
+    <string name="decor_cost">%1$d 포인트</string>
+    <string name="decor_from_storage">보관함에서</string>
+    <string name="decor_place_here">여기 놓기</string>
+    <string name="decor_move_here">여기로 옮기기</string>
+    <string name="decor_move">옮기기</string>
+    <string name="decor_flip">돌리기</string>
+    <string name="decor_store">보관함으로</string>
+    <string name="decor_house_move_only">옮기기만 돼요</string>
+    <string name="decor_low_points">포인트가 모자라요 (%1$d 포인트 필요)</string>
+    <string name="decor_unlock_title">%1$d포인트로 얻을까요?</string>
+    <string name="decor_unlock_body">%1$s 얻으면 보관함에 들어가요. 지금 포인트 %2$s. 돈으로는 살 수 없어요.</string>
+    <string name="decor_unlock_ok">얻기</string>
+    <string name="decor_save_title">저장할까요?</string>
+    <string name="decor_save_body">바꾼 배치를 저장하지 않으면 사라져요.</string>
+    <string name="decor_save_ok">저장</string>
+    <string name="decor_save_no">저장 안 함</string>
+
+    <!-- Idle screen -->
+    <string name="idle_navi_destination">목적지</string>
+    <string name="idle_navi_distance">남은 거리</string>
+    <string name="idle_navi_eta">도착 예정</string>
+    <string name="idle_navi_left">남은 시간</string>
+    <string name="debug_navi_demo">유휴 화면 내비 예시 보기 (에뮬레이터는 내비 이벤트를 못 바꿈)</string>
+    <string name="debug_on">켜짐</string>
+    <string name="debug_off">꺼짐</string>
+
+    <!-- Resident big card -->
+    <string name="card_acquired_title">새 주민을 만났어요!</string>
+    <string name="debug_acquired">획득 카드 보기 (임시, 주민을 차례로)</string>
+    <string name="card_open_dex">도감에서 보기</string>
+    <string name="card_status">상태</string>
+
+    <string name="debug_demo_done">천장 직전 상태로 만들었어요 (레이니 2번, 해삐 1번, 저니 1번 놓침)</string>
+    <string name="debug_time_scale">시간 배율 (누르면 1× ↔ 60×)</string>
+    <string name="debug_speed_filter">속도 필터 (20km/h 미만 급한 조작 무시)</string>
+    <string name="debug_end_trip">운행 종료</string>
+    <string name="debug_reset_today">오늘 판정 횟수 초기화</string>
+    <string name="debug_reset_all">데이터 초기화 (주민·운행·포인트)</string>
+</resources>

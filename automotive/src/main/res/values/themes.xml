@@ -1,0 +1,7 @@
+<resources>
+
+    <!-- Compose draws the whole screen. No title bar. -->
+    <style name="Theme.PleosVillage" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@android:color/white</item>
+    </style>
+</resources>
