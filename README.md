@@ -9,6 +9,8 @@
 </p>
 <p align="center"><sub>시연 영상 4.5배속 · 원본(2분): <a href="docs/media/demo.mp4">docs/media/demo.mp4</a></sub></p>
 
+**APK 다운로드:** [Releases v1.0.0](https://github.com/yangleejung/Pleos-Village/releases/tag/v1.0.0) — `yangleejung_PleosVillage_release.apk`
+
 ---
 
 ## 이렇게 동작해요
@@ -73,8 +75,21 @@ automotive/src/main/java/com/grad/pleosvillage/
 
 ## 빌드와 실행
 
-필요한 것: Android Studio(JDK 17), Pleos Connect Emulator v2.1.0 (Android 14, API 34)
+**테스트 환경**
+- Pleos Connect Emulator v2.1.0 (Android 14, API 34)
+- 화면 규격: 1600×900 에뮬레이터 기준. 앱 창은 Driving View와 하단 상태바를 뺀 영역입니다.
+  - 넓은 배치(앱 창 1개, 가로형): 1152×748dp
+  - 좁은 배치(앱 창 2개 중 하나, 세로형): 571×748dp
+  - 앱 창 너비가 840dp 이상이면 넓은 배치, 미만이면 좁은 배치로 자동 전환됩니다.
+- 필요한 것: Android Studio(JDK 17)
 
+**APK로 바로 실행**
+```bash
+adb install yangleejung_PleosVillage_release.apk
+adb shell am start -n com.grad.pleosvillage/.MainActivity
+```
+
+**소스에서 빌드**
 ```bash
 ./gradlew :automotive:assembleDebug        # 빌드
 ./gradlew :automotive:installDebug         # 에뮬레이터에 설치
